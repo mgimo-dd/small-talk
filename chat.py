@@ -19,7 +19,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     
     # Example prompt
-    prompt = "Give me a short introduction to large language model."
+    prompt = "Give me a short introduction to a large language model."
     messages = [
         {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."},
         {"role": "user", "content": prompt}
