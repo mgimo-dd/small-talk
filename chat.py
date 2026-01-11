@@ -23,24 +23,23 @@ class QwenChatbot:
             streamer = TextIteratorStreamer(self.tokenizer, skip_prompt=True, skip_special_tokens=True)
             
             # Define generation arguments
-            generation_kwargs = dict(
-                inputs,
-                streamer=streamer,
-                max_new_tokens=32768
-            )
+            generation_kwargs = {
+                **inputs,
+                "streamer": streamer,
+                "max_new_tokens": 32768
+            }
             
             # Run generation in a separate thread
             thread = Thread(target=self.model.generate, kwargs=generation_kwargs)
             thread.start()
             
             # Collect the full response while streaming
-            response = ""
+            response_chunks = []
             for new_text in streamer:
-                response += new_text
+                response_chunks.append(new_text)
                 yield new_text
             
-            # Wait for the generation thread to finish
-            thread.join()
+            response = ''.join(response_chunks)
         else:
             response_ids = self.model.generate(**inputs, max_new_tokens=32768)[0][len(inputs.input_ids[0]):].tolist()
             response = self.tokenizer.decode(response_ids, skip_special_tokens=True)
