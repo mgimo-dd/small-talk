@@ -8,6 +8,16 @@ class QwenChatbot:
         self.history = []
 
     def generate_response(self, user_input, stream=False):
+        """Generate a response to user input.
+        
+        Args:
+            user_input: The user's message
+            stream: If False (default), returns the complete response as a string.
+                   If True, yields text chunks as they are generated (generator).
+        
+        Returns:
+            str when stream=False, or yields str chunks when stream=True
+        """
         messages = self.history + [{"role": "user", "content": user_input}]
 
         text = self.tokenizer.apply_chat_template(
@@ -34,6 +44,8 @@ class QwenChatbot:
             thread.start()
             
             # Collect the full response while streaming
+            # Note: The streamer will stop yielding when generation is complete,
+            # so no explicit thread.join() is needed after this loop
             response_chunks = []
             for new_text in streamer:
                 response_chunks.append(new_text)
